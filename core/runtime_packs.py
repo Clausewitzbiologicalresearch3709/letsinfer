@@ -779,6 +779,14 @@ def _companion_executable(name: str) -> str | None:
     executable = shutil.which(name)
     if executable is not None:
         return executable
+    launcher_directory = os.environ.get("LETSINFER_LAUNCHER_DIR")
+    if launcher_directory:
+        candidate = pathlib.Path(launcher_directory) / name
+        try:
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                return str(candidate)
+        except OSError:
+            return None
     invocation = pathlib.Path(sys.argv[0]).expanduser()
     if invocation.parent == pathlib.Path("."):
         resolved = shutil.which(sys.argv[0])

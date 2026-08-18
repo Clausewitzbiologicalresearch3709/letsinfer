@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: AGPL-3.0-only
 set -euo pipefail
+LETSINFER_LAUNCHER_DIR=$(CDPATH= cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+export LETSINFER_LAUNCHER_DIR
 SCRIPT_PATH=${BASH_SOURCE[0]}
 while [ -L "$SCRIPT_PATH" ]; do
     SCRIPT_DIR=$(CDPATH= cd -P -- "$(dirname -- "$SCRIPT_PATH")" && pwd)

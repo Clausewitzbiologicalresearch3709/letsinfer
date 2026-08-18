@@ -29,8 +29,10 @@ class RuntimePackTests(unittest.TestCase):
             launcher.write_text("launcher\n", encoding="utf-8")
             companion.write_text("tool\n", encoding="utf-8")
             companion.chmod(0o755)
-            with mock.patch.object(
-                runtime_packs.sys, "argv", [str(launcher)]
+            with mock.patch.dict(
+                os.environ, {"LETSINFER_LAUNCHER_DIR": str(bin_root)}
+            ), mock.patch.object(
+                runtime_packs.sys, "argv", ["-c"]
             ), mock.patch.object(runtime_packs.shutil, "which", return_value=None):
                 self.assertEqual(
                     runtime_packs._companion_executable("oras"), str(companion)
