@@ -242,6 +242,55 @@ class SiteStateTests(unittest.TestCase):
                     with self.assertRaises(state.SiteError):
                         store.set_placement(candidate)
 
+    def test_new_running_placement_atomically_supersedes_old_model_placement(self) -> None:
+        identity = state.setup_site()
+        endpoint = {
+            "member_id": identity.member_id,
+            "url": "http://127.0.0.1:18000",
+            "credential_file": str(state.config_root() / "engine.key"),
+            "ca_file": None,
+            "token_count_path": "/v1/token-count",
+            "token_count_protocol": "letsinfer-token-count-v1",
+            "max_active_requests": 1,
+            "max_context_tokens": 4096,
+            "healthy": True,
+            "memory_pressure": False,
+            "temperature_c": -1,
+            "prefix_keys": [],
+        }
+        first = {
+            "placement_id": "a" * 32,
+            "model": "fixture-model",
+            "runtime": "fixture-model/fixture-engine/fixture-target@1",
+            "target": "fixture-target",
+            "strategy": "single",
+            "state": "running",
+            "topology_sha256": "b" * 64,
+            "members": [identity.member_id],
+            "endpoints": [endpoint],
+            "capacity": {
+                "max_connections": 16,
+                "max_active_requests": 1,
+                "max_context_tokens": 4096,
+            },
+        }
+        second = copy.deepcopy(first)
+        second.update(
+            {
+                "placement_id": "c" * 32,
+                "runtime": "fixture-model/fixture-engine/fixture-target@2",
+                "topology_sha256": "d" * 64,
+            }
+        )
+        with state.SiteStore(identity=identity) as store:
+            store.set_placement(first)
+            before = store.verify_audit()["events"]
+            store.set_placement(second)
+            placements = {row["placement_id"]: row for row in store.placements()}
+            self.assertEqual(placements[first["placement_id"]]["state"], "stopped")
+            self.assertEqual(placements[second["placement_id"]]["state"], "running")
+            self.assertEqual(store.verify_audit()["events"], before + 1)
+
     def test_member_drain_and_resume_are_atomic_audited_admission_states(self) -> None:
         identity = state.setup_site()
         with state.SiteStore(identity=identity) as store:

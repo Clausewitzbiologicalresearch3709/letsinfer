@@ -1898,7 +1898,21 @@ class SiteStore:
         current = self.connection.execute(
             "SELECT * FROM placements WHERE placement_id=?", (placement["placement_id"],)
         ).fetchone()
-        before = {} if current is None else dict(current)
+        superseded = []
+        if placement["state"] == "running":
+            superseded = [
+                str(item[0])
+                for item in self.connection.execute(
+                    "SELECT placement_id FROM placements "
+                    "WHERE model=? AND state='running' AND placement_id!=? "
+                    "ORDER BY placement_id",
+                    (placement["model"], placement["placement_id"]),
+                )
+            ]
+        before = {
+            "placement": {} if current is None else dict(current),
+            "superseded_running": superseded,
+        }
         row = {
             "placement_id": placement["placement_id"], "model": placement["model"],
             "runtime": placement["runtime"], "target": placement["target"],
@@ -1911,6 +1925,12 @@ class SiteStore:
         }
 
         def update(connection: sqlite3.Connection) -> dict[str, Any]:
+            if row["state"] == "running":
+                connection.execute(
+                    "UPDATE placements SET state='stopped', updated_at_unix=? "
+                    "WHERE model=? AND state='running' AND placement_id!=?",
+                    (row["updated_at_unix"], row["model"], row["placement_id"]),
+                )
             connection.execute(
                 """INSERT INTO placements
                    (placement_id,model,runtime,target,strategy,state,topology_sha256,
