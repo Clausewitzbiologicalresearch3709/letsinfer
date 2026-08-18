@@ -1009,7 +1009,7 @@ def _worker_command(
         "--prompt-plan",
         str(plan_path),
         "--base-url",
-        arguments.base_url,
+        f"https://127.0.0.1:{arguments.engine_port}",
         "--output-directory",
         str(output),
         "--api-key-file",

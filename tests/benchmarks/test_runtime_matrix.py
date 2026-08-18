@@ -548,6 +548,10 @@ class RuntimeMatrixTests(unittest.TestCase):
             def worker(command: list[str]) -> types.SimpleNamespace:
                 nonlocal process_number
                 process_number += 1
+                self.assertEqual(
+                    command[command.index("--base-url") + 1],
+                    "https://127.0.0.1:18000",
+                )
                 result_root = pathlib.Path(
                     command[command.index("--output-directory") + 1]
                 )
