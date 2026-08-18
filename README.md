@@ -566,7 +566,9 @@ runtime-pack design, engine adapters, the runtime and catalog formats, public
 CLI workflows, transactional upgrade and rollback behavior, and the resident
 Watchdog safety contract.
 
-Registry publication remains product work.
+The first public runtime is DeepSeek V4 Flash with DwarfStar on DGX Spark.
+`letsinfer install deepseek-v4-flash` resolves it through the built-in signed
+catalog and installs the immutable runtime and engine-image identities.
 
 ## Repository layout
 
@@ -612,10 +614,10 @@ Registry publication remains product work.
 
 The current source is `0.11.0-rc.3`. The logical-site, gateway, membership,
 orchestration, benchmark, Watchdog, and native Mac source suites pass on their
-applicable platforms. Core ships no model runtime. The current external
-DS4/DwarfStar runtime candidate is activation-blocked until its Linux/DGX Spark
-control-plane qualification completes. Public release additionally requires
-pullable immutable OCI identities plus portable source/evidence publication.
+applicable platforms. Core ships no model runtime. DeepSeek V4 Flash with
+DwarfStar is the first external, publicly installable DGX Spark runtime; its
+runtime pack, engine image, and signed catalog entry use immutable OCI
+identities. Qualification and benchmark evidence remain owned by that runtime.
 Live replicated or distributed execution requires a second physical member;
 evidence never transfers between topology targets.
 

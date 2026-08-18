@@ -205,5 +205,7 @@ catalog ambiguity and fail closed instead of asking an ordinary user to choose
 a target. An explicit development override still cannot force incompatible
 hardware. The selected target contract's canonical SHA-256 is verified against
 the runtime manifest and retained in the installation receipt.
-Set `LETSINFER_CATALOG`, install `~/.config/letsinfer/catalog.json`, or pass
-`--catalog` explicitly.
+Core uses the signed production catalog and bundled public trust key by
+default. Set `LETSINFER_CATALOG`, install
+`~/.config/letsinfer/catalog.json`, or pass `--catalog` explicitly only to
+override that production source.

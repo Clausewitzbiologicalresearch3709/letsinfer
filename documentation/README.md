@@ -24,8 +24,9 @@ when you need more detail:
   crash/OOM protection service.
 
 Let's Infer currently implements its first target contract for a 128 GB
-GB10/SM121 DGX Spark. The external signed catalog will publish qualified model
-runtimes for that target; core itself publishes none. The core maps runtimes
+GB10/SM121 DGX Spark. The external signed catalog publishes the first qualified
+runtime, DeepSeek V4 Flash with DwarfStar, for that target; core itself
+publishes none. The core maps runtimes
 through stable device capabilities and can
 represent future discrete or multi-GPU targets, but each requires independent
 runtime contents and qualification. Engine agnosticism means that vLLM,
