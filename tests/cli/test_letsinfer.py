@@ -1458,6 +1458,42 @@ class InstallTests(unittest.TestCase):
                 second_root, second_manifest, letsinfer.sha256_file(manifest_path)
             )
 
+    def test_config_rebind_uses_artifacts_from_the_previous_bundle(self) -> None:
+        source = pathlib.Path("/previous-control")
+        manifest_path = source / "releases/release.json"
+        rebound_root = pathlib.Path("/current-control")
+        rebound_manifest = rebound_root / "releases/release.json"
+        config = {
+            "source_root": str(source),
+            "manifest_path": str(manifest_path),
+            "manifest_sha256": "a" * 64,
+            "model": "example-model",
+            "engine": "vllm",
+        }
+        manifest = json.loads(VLLM_MANIFEST_PATH.read_text(encoding="utf-8"))
+        config["model"] = manifest["model"]["alias"]
+        config["engine"] = manifest["engine"]["name"]
+        with mock.patch.object(
+            letsinfer,
+            "validate_control_bundle",
+            return_value=(manifest_path, manifest),
+        ), mock.patch.object(
+            letsinfer, "source_root", return_value=pathlib.Path("/current-core")
+        ), mock.patch.object(
+            letsinfer,
+            "install_control_bundle",
+            return_value=(rebound_root, rebound_manifest),
+        ) as install:
+            rebound = letsinfer.bind_config_to_control_bundle(config)
+
+        install.assert_called_once_with(
+            manifest_path,
+            manifest,
+            artifact_roots=(source, pathlib.Path("/current-core")),
+        )
+        self.assertEqual(rebound["source_root"], str(rebound_root))
+        self.assertEqual(rebound["manifest_path"], str(rebound_manifest))
+
     def test_control_bundle_tampering_fails_closed(self) -> None:
         manifest_path = VLLM_MANIFEST_PATH
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))

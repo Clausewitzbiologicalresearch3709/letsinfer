@@ -5350,7 +5350,9 @@ def bind_config_to_control_bundle(config: dict[str, Any]) -> dict[str, Any]:
         source, manifest_path, manifest_sha
     )
     candidate_root, manifest_path = install_control_bundle(
-        manifest_path, manifest
+        manifest_path,
+        manifest,
+        artifact_roots=(source, source_root()),
     )
     if manifest["model"]["alias"] != config["model"]:
         raise LetsInferError("previous service bundle model alias is inconsistent")
