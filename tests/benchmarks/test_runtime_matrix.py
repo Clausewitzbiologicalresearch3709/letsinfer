@@ -13,6 +13,13 @@ import types
 import unittest
 from unittest import mock
 
+from tools.source_archive import (
+    PUBLIC_DIRECTORIES,
+    PUBLIC_ROOT_FILES,
+    public_files,
+    source_manifest,
+)
+
 
 BENCHMARK_DIR = pathlib.Path(__file__).resolve().parents[2] / "benchmarks"
 MODULE_SPEC = importlib.util.spec_from_file_location(
@@ -24,6 +31,70 @@ MODULE_SPEC.loader.exec_module(runtime_matrix)
 
 
 class RuntimeMatrixTests(unittest.TestCase):
+    def _control_bundle(
+        self, parent: pathlib.Path, manifest: dict
+    ) -> tuple[pathlib.Path, pathlib.Path, str]:
+        staging = parent / "staging"
+        staging.mkdir()
+        for name in PUBLIC_ROOT_FILES:
+            (staging / name).write_text(f"{name}\n", encoding="utf-8")
+        for name in PUBLIC_DIRECTORIES:
+            path = staging / name
+            path.mkdir(parents=True)
+            (path / "source.txt").write_text(f"{name}\n", encoding="utf-8")
+        release = staging / "releases" / "release.json"
+        release.parent.mkdir()
+        release.write_text(
+            json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n",
+            encoding="utf-8",
+        )
+        core_manifest = source_manifest(public_files(staging))
+        (staging / "SOURCE-MANIFEST.json").write_bytes(
+            runtime_matrix.benchmark_record.canonical_bytes(core_manifest)
+        )
+        core_identity = hashlib.sha256(
+            runtime_matrix.benchmark_record.canonical_bytes(core_manifest)
+        ).hexdigest()
+        manifest_identity = hashlib.sha256(release.read_bytes()).hexdigest()
+        bundle_identity = hashlib.sha256(
+            runtime_matrix.benchmark_record.canonical_bytes(
+                {
+                    "schema_version": 1,
+                    "core_source_sha256": core_identity,
+                    "runtime_manifest_sha256": manifest_identity,
+                }
+            )
+        ).hexdigest()
+        root = parent / bundle_identity
+        staging.rename(root)
+        return root, root / "releases" / "release.json", core_identity
+
+    def test_composite_control_bundle_is_accepted_and_core_tampering_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            parent = pathlib.Path(directory)
+            measured_commit = "a" * 40
+            manifest = {
+                "serving": {"gate": {"measured_commit": measured_commit}},
+                "source_artifacts": [],
+            }
+            root, release, core_identity = self._control_bundle(parent, manifest)
+
+            identity = runtime_matrix.verified_source_identity(
+                root, release, manifest, measured_commit, None
+            )
+            self.assertEqual(identity["kind"], "verified-control-bundle")
+            self.assertEqual(identity["core_source_sha256"], core_identity)
+
+            (root / "core" / "source.txt").write_text(
+                "tampered\n", encoding="utf-8"
+            )
+            with self.assertRaisesRegex(
+                runtime_matrix.RuntimeMatrixError, "core source manifest mismatch"
+            ):
+                runtime_matrix.verified_source_identity(
+                    root, release, manifest, measured_commit, None
+                )
+
     def test_materializer_and_cells_launch_on_the_backend_port(self) -> None:
         arguments = types.SimpleNamespace(
             letsinfer_bin=pathlib.Path("/opt/letsinfer"),
@@ -240,13 +311,11 @@ class RuntimeMatrixTests(unittest.TestCase):
                 {"path": "a", "sha256": "1" * 64},
             ]
         }
-        manifest_bytes = json.dumps(manifest).encode("utf-8")
-        manifest_sha = hashlib.sha256(manifest_bytes).hexdigest()
         with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory) / manifest_sha
-            path = root / "releases/release.json"
-            path.parent.mkdir(parents=True)
-            path.write_bytes(manifest_bytes)
+            root, path, _core_identity = self._control_bundle(
+                pathlib.Path(directory), manifest
+            )
+            manifest_sha = hashlib.sha256(path.read_bytes()).hexdigest()
             identity = runtime_matrix.verified_source_identity(
                 root, path, manifest, "a" * 40, None
             )
@@ -260,13 +329,10 @@ class RuntimeMatrixTests(unittest.TestCase):
             "serving": {"gate": {"measured_commit": "a" * 40}},
             "source_artifacts": [],
         }
-        manifest_bytes = json.dumps(manifest).encode("utf-8")
-        manifest_sha = hashlib.sha256(manifest_bytes).hexdigest()
         with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory) / manifest_sha
-            path = root / "releases/release.json"
-            path.parent.mkdir(parents=True)
-            path.write_bytes(manifest_bytes)
+            root, path, _core_identity = self._control_bundle(
+                pathlib.Path(directory), manifest
+            )
             with self.assertRaisesRegex(
                 runtime_matrix.RuntimeMatrixError, "sealed measured commit"
             ):

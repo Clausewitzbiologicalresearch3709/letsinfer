@@ -879,10 +879,39 @@ def verified_source_identity(
 
     manifest_sha256 = common.sha256_file(manifest_path)
     expected_manifest = source_root / "releases" / manifest_path.name
-    if (
-        source_root.name != manifest_sha256
-        or manifest_path.resolve() != expected_manifest.resolve()
-    ):
+    if manifest_path.resolve() != expected_manifest.resolve():
+        raise RuntimeMatrixError(
+            "deployment tree is not a hash-addressed control bundle; "
+            "--source-attestation is required"
+        )
+    try:
+        from tools.source_archive import (  # pylint: disable=import-outside-toplevel
+            SourceArchiveError,
+            public_files,
+            source_manifest,
+        )
+
+        generated_core_manifest = source_manifest(public_files(source_root))
+        recorded_core_manifest = common.read_json_object(
+            source_root / "SOURCE-MANIFEST.json", "core source manifest"
+        )
+    except (OSError, SourceArchiveError, common.QualificationError) as error:
+        raise RuntimeMatrixError(f"control-bundle core source is invalid: {error}") from error
+    if recorded_core_manifest != generated_core_manifest:
+        raise RuntimeMatrixError("control-bundle core source manifest mismatch")
+    core_identity = hashlib.sha256(
+        benchmark_record.canonical_bytes(generated_core_manifest)
+    ).hexdigest()
+    bundle_identity = hashlib.sha256(
+        benchmark_record.canonical_bytes(
+            {
+                "schema_version": 1,
+                "core_source_sha256": core_identity,
+                "runtime_manifest_sha256": manifest_sha256,
+            }
+        )
+    ).hexdigest()
+    if source_root.name != bundle_identity:
         raise RuntimeMatrixError(
             "deployment tree is not a hash-addressed control bundle; "
             "--source-attestation is required"
@@ -907,6 +936,7 @@ def verified_source_identity(
     return {
         "kind": "verified-control-bundle",
         "commit": measured_commit,
+        "core_source_sha256": core_identity,
         "manifest_sha256": manifest_sha256,
         "source_artifacts_sha256": artifacts_sha256,
     }
