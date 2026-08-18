@@ -1001,6 +1001,9 @@ def _worker_command(
     output: pathlib.Path,
 ) -> list[str]:
     context, concurrency = cell["name"].split("-c", 1)
+    worker_api_key = (
+        getattr(arguments, "token_count_api_key_file", None) or arguments.api_key_file
+    )
     command = [
         sys.executable,
         str(pathlib.Path(__file__).resolve()),
@@ -1013,7 +1016,7 @@ def _worker_command(
         "--output-directory",
         str(output),
         "--api-key-file",
-        str(arguments.api_key_file),
+        str(worker_api_key),
         "--ca-cert-file",
         str(arguments.ca_cert_file),
         "--container",

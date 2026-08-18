@@ -525,6 +525,7 @@ class RuntimeMatrixTests(unittest.TestCase):
                 engine_port=18000,
                 base_url="https://127.0.0.1:8000",
                 api_key_file=root / "api-key",
+                token_count_api_key_file=root / "engine-api-key",
                 ca_cert_file=root / "server.crt",
                 measured_commit="a" * 40,
                 watchdog_trip_file=root / "trip.json",
@@ -551,6 +552,10 @@ class RuntimeMatrixTests(unittest.TestCase):
                 self.assertEqual(
                     command[command.index("--base-url") + 1],
                     "https://127.0.0.1:18000",
+                )
+                self.assertEqual(
+                    command[command.index("--api-key-file") + 1],
+                    str(root / "engine-api-key"),
                 )
                 result_root = pathlib.Path(
                     command[command.index("--output-directory") + 1]
