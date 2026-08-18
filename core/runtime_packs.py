@@ -775,10 +775,31 @@ def _extract_archive(archive_path: pathlib.Path, destination: pathlib.Path) -> N
             target.chmod(0o755 if member.mode & 0o111 else 0o644)
 
 
+def _companion_executable(name: str) -> str | None:
+    executable = shutil.which(name)
+    if executable is not None:
+        return executable
+    invocation = pathlib.Path(sys.argv[0]).expanduser()
+    if invocation.parent == pathlib.Path("."):
+        resolved = shutil.which(sys.argv[0])
+        if resolved is None:
+            return None
+        invocation = pathlib.Path(resolved)
+    elif not invocation.is_absolute():
+        invocation = pathlib.Path.cwd() / invocation
+    candidate = invocation.parent / name
+    try:
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    except OSError:
+        return None
+    return None
+
+
 def _pull_oci(reference: str, destination: pathlib.Path) -> None:
     if not REGISTRY_DIGEST_RE.fullmatch(reference):
         raise RuntimePackError("OCI runtime references must be pinned by sha256 digest")
-    executable = shutil.which("oras")
+    executable = _companion_executable("oras")
     if executable is None:
         raise RuntimePackError("OCI runtime installation requires the oras CLI")
     result = subprocess.run(

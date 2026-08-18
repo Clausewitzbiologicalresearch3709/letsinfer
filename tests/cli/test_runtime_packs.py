@@ -21,6 +21,21 @@ from core import runtime_packs
 
 
 class RuntimePackTests(unittest.TestCase):
+    def test_companion_executable_is_found_beside_installed_launcher(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            bin_root = pathlib.Path(directory)
+            launcher = bin_root / "letsinfer"
+            companion = bin_root / "oras"
+            launcher.write_text("launcher\n", encoding="utf-8")
+            companion.write_text("tool\n", encoding="utf-8")
+            companion.chmod(0o755)
+            with mock.patch.object(
+                runtime_packs.sys, "argv", [str(launcher)]
+            ), mock.patch.object(runtime_packs.shutil, "which", return_value=None):
+                self.assertEqual(
+                    runtime_packs._companion_executable("oras"), str(companion)
+                )
+
     def test_production_catalog_and_trust_key_are_zero_configuration_defaults(self) -> None:
         with tempfile.TemporaryDirectory() as directory, mock.patch.dict(
             os.environ,
