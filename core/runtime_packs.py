@@ -33,6 +33,12 @@ RUNTIME_DESCRIPTOR = "letsinfer-runtime.json"
 RUNTIME_SCHEMA_VERSION = 2
 ARTIFACT_SCHEMA_VERSION = 2
 CATALOG_SCHEMA_VERSION = 3
+DEFAULT_CATALOG_URL = (
+    "https://raw.githubusercontent.com/letsinferlabs/catalog/main/catalog.json"
+)
+BUILTIN_CATALOG_PUBLIC_KEY = (
+    pathlib.Path(__file__).resolve().parent / "trust" / "catalog-public-key.pem"
+)
 PACK_MEDIA_TYPE = "application/vnd.letsinfer.runtime.v2+tar"
 REGISTRY_DIGEST_RE = re.compile(r"^[^\s@]+@sha256:[0-9a-f]{64}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -1057,7 +1063,7 @@ def _catalog_public_key(explicit: str | None) -> pathlib.Path | None:
         else pathlib.Path.home() / ".config/letsinfer"
     )
     default = root / "catalog-public-key.pem"
-    return default if default.is_file() else None
+    return default if default.is_file() else BUILTIN_CATALOG_PUBLIC_KEY
 
 
 def _remote_bytes(location: str, *, limit: int, label: str) -> bytes:
@@ -1377,7 +1383,7 @@ def resolved_catalog_location(explicit: str | None = None) -> str | None:
     config_override = os.environ.get("LETSINFER_CONFIG_HOME")
     root = pathlib.Path(config_override).expanduser() if config_override else pathlib.Path.home() / ".config/letsinfer"
     default = root / "catalog.json"
-    return str(default) if default.is_file() else None
+    return str(default) if default.is_file() else DEFAULT_CATALOG_URL
 
 
 def _is_option_token(token: str) -> bool:

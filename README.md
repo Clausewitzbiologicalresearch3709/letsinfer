@@ -123,10 +123,12 @@ Each runtime identity is `model/engine/target`, such as
 `example-model/vllm/dgx-spark`. A target owns the exact engine
 revision, patches, kernels, configuration, and evidence for that device class.
 A trusted schema-3 catalog declares each hardware target once and recommends
-one qualified engine independently for each model and target. Remote catalogs
-must ship an exact-byte Ed25519 sidecar at `<catalog-url>.sig`; Let's Infer
-verifies it against `~/.config/letsinfer/catalog-public-key.pem` (or
-`LETSINFER_CATALOG_PUBLIC_KEY`) before parsing any target or runtime choice.
+one qualified engine independently for each model and target. Let's Infer uses
+the signed `letsinferlabs/catalog` catalog and its built-in public trust key by
+default. Remote catalogs must ship an exact-byte Ed25519 sidecar at
+`<catalog-url>.sig`; `~/.config/letsinfer/catalog-public-key.pem` and
+`LETSINFER_CATALOG_PUBLIC_KEY` are explicit trust-root overrides. Signature
+verification happens before parsing any target or runtime choice.
 An explicitly selected unsigned local file is a development trust boundary,
 not a remotely trusted catalog. The ordinary user chooses only the model;
 `--engine` remains available to power users.

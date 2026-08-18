@@ -98,16 +98,17 @@ letsinfer rollback RUNTIME [--target TARGET] [--dry-run]
 `pack` creates a deterministic `.letsinfer` artifact. `install` accepts local
 runtime repositories, local `.letsinfer` archives, trusted catalog models, and
 digest-pinned OCI artifacts. An already installed runtime can also be selected
-by model or runtime identity. Let's Infer core has no built-in model registry. An
+by model or runtime identity. Core embeds no model runtime; its default signed
+catalog only resolves model names to external immutable OCI artifacts. An
 imported candidate remains blocked
 from service activation until its serving gate is qualified.
 
-Remote catalogs require HTTPS, an exact-byte Ed25519 signature at
-`<catalog-url>.sig`, and a trusted public key at
-`~/.config/letsinfer/catalog-public-key.pem` or
-`LETSINFER_CATALOG_PUBLIC_KEY`. A signature binds the catalog SHA-256 and the
-trusted public-key fingerprint. An explicitly selected unsigned local catalog
-is supported only as a development trust boundary.
+Remote catalogs require HTTPS and an exact-byte Ed25519 signature at
+`<catalog-url>.sig`. The production catalog and its public trust key are
+built-in defaults; `~/.config/letsinfer/catalog-public-key.pem` and
+`LETSINFER_CATALOG_PUBLIC_KEY` override the trust root. A signature binds the
+catalog SHA-256 and trusted public-key fingerprint. An explicitly selected
+unsigned local catalog is supported only as a development trust boundary.
 
 For a qualified or candidate runtime, `install` automatically acquires every missing exact
 model artifact and registry image layer. The Hugging Face

@@ -43,18 +43,19 @@ network, standard OpenAI clients use `http://<hostname>.local:8000/v1` and a
 site API key; they do not install a certificate. Private control and engine
 connections remain TLS-protected.
 
-Install a qualified model runtime from a trusted catalog:
+Install a qualified model runtime from the built-in signed production catalog:
 
 ```bash
-letsinfer install example-model --catalog ./catalog.json
+letsinfer install deepseek-v4-flash
 ```
 
-For a remote catalog, install its Ed25519 public trust key at
-`~/.config/letsinfer/catalog-public-key.pem` (or set
-`LETSINFER_CATALOG_PUBLIC_KEY`). The publisher must place the exact-byte
+The default catalog is fetched over HTTPS from `letsinferlabs/catalog` and
+verified with the public key shipped in core. A custom remote catalog can
+override that trust root at `~/.config/letsinfer/catalog-public-key.pem` or
+with `LETSINFER_CATALOG_PUBLIC_KEY`. The publisher must place the exact-byte
 signature document at `<catalog-url>.sig`; Let's Infer verifies the signature,
-catalog SHA-256, and trust-key fingerprint before target selection. An unsigned
-local catalog is an explicit development input only.
+catalog SHA-256, and trust-key fingerprint before target selection. An
+explicitly selected unsigned local catalog is a development input only.
 
 Install a runtime repository during development:
 

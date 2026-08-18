@@ -56,6 +56,7 @@ GENERATED_DIRECTORY_NAMES = frozenset(
 GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".swp", ".swo", "~")
 SENSITIVE_FILE_NAMES = frozenset({".env", "service.json"})
 SENSITIVE_FILE_SUFFIXES = (".crt", ".key", ".pem", ".token")
+PUBLIC_TRUST_FILES = frozenset({"core/trust/catalog-public-key.pem"})
 PRIVATE_KEY_MARKERS = (
     b"-----BEGIN " + b"PRIVATE KEY-----",
     b"-----BEGIN " + b"EC PRIVATE KEY-----",
@@ -106,8 +107,9 @@ def _validate_public_relative(value: Any) -> pathlib.PurePosixPath:
         raise SourceArchiveError(f"public source path is outside the allowlist: {value}")
     if root in LOCAL_ONLY_PATHS or _is_generated(relative):
         raise SourceArchiveError(f"public source path is local or generated: {value}")
-    if relative.name in SENSITIVE_FILE_NAMES or relative.name.endswith(
-        SENSITIVE_FILE_SUFFIXES
+    if relative.name in SENSITIVE_FILE_NAMES or (
+        relative.name.endswith(SENSITIVE_FILE_SUFFIXES)
+        and value not in PUBLIC_TRUST_FILES
     ):
         raise SourceArchiveError(f"sensitive file is forbidden in public source: {value}")
     return relative

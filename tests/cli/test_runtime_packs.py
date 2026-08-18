@@ -21,6 +21,24 @@ from core import runtime_packs
 
 
 class RuntimePackTests(unittest.TestCase):
+    def test_production_catalog_and_trust_key_are_zero_configuration_defaults(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, mock.patch.dict(
+            os.environ,
+            {
+                "LETSINFER_CONFIG_HOME": directory,
+                "LETSINFER_CATALOG": "",
+                "LETSINFER_CATALOG_PUBLIC_KEY": "",
+            },
+            clear=False,
+        ):
+            self.assertEqual(
+                runtime_packs.resolved_catalog_location(),
+                runtime_packs.DEFAULT_CATALOG_URL,
+            )
+            public_key = runtime_packs._catalog_public_key(None)
+            self.assertEqual(public_key, runtime_packs.BUILTIN_CATALOG_PUBLIC_KEY)
+            self.assertTrue(public_key.is_file())
+
     def _single_placement(self) -> dict[str, object]:
         return {
             "strategy": "single",
@@ -560,7 +578,7 @@ class RuntimePackTests(unittest.TestCase):
             ):
                 runtime_packs.load_catalog(str(path), public_key=str(public_key))
 
-    def test_remote_catalog_requires_detached_signature_and_trust_key(self) -> None:
+    def test_remote_catalog_requires_valid_detached_signature(self) -> None:
         class Response:
             def __init__(self, url: str, data: bytes) -> None:
                 self.url = url
@@ -584,16 +602,8 @@ class RuntimePackTests(unittest.TestCase):
             mock.patch.object(
                 runtime_packs.urllib.request, "urlopen", side_effect=responses
             ),
-            mock.patch.dict(
-                os.environ,
-                {
-                    "LETSINFER_CONFIG_HOME": tempfile.gettempdir(),
-                    "LETSINFER_CATALOG_PUBLIC_KEY": "",
-                },
-                clear=False,
-            ),
             self.assertRaisesRegex(
-                runtime_packs.RuntimePackError, "requires an installed public trust key"
+                runtime_packs.RuntimePackError, "signature schema is unsupported"
             ),
         ):
             runtime_packs.load_catalog(location)

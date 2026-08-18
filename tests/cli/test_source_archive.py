@@ -129,6 +129,26 @@ class SourceArchiveTests(unittest.TestCase):
             with self.assertRaisesRegex(SourceArchiveError, "private key material"):
                 build_archive(root, root / "source.tar.gz")
 
+    def test_exact_catalog_public_key_path_is_the_only_pem_exception(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            self._source(root)
+            trust = root / "core" / "trust"
+            trust.mkdir()
+            public_key = trust / "catalog-public-key.pem"
+            public_key.write_text(
+                "-----BEGIN PUBLIC KEY-----\nfixture\n-----END PUBLIC KEY-----\n",
+                encoding="utf-8",
+            )
+            build_archive(root, root / "source.tar.gz")
+
+            public_key.write_text(
+                "-----BEGIN " + "PRIVATE KEY-----\nfixture\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(SourceArchiveError, "private key material"):
+                build_archive(root, root / "source.tar.gz")
+
     def test_tampered_archive_fails_verification(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = pathlib.Path(temporary)

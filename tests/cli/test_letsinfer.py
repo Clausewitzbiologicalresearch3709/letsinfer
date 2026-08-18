@@ -1848,6 +1848,7 @@ class InstallTests(unittest.TestCase):
             model="model", engine="vllm", no_service=False
         )
         with (
+            mock.patch.object(letsinfer, "_runtime_source_for_install", return_value=None),
             mock.patch.object(
                 letsinfer, "resolve_model", return_value=(pathlib.Path("release.json"), manifest)
             ),
