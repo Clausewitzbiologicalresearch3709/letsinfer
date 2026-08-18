@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "sample_interval_seconds": 2,
+  "tasks": [
+    {
+      "name": "single-16k-soak",
+      "cell": "single-16k-soak-x1",
+      "warmup_waves": 2,
+      "measured_waves": 180,
+      "cooldown_seconds": 1,
+      "require_output_equality": true
+    }
+  ]
+}

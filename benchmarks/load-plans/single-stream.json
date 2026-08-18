@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "sample_interval_seconds": 2,
+  "tasks": [
+    {
+      "name": "single-1k",
+      "cell": "single-1k-x1",
+      "warmup_waves": 2,
+      "measured_waves": 20,
+      "cooldown_seconds": 1,
+      "require_output_equality": true
+    },
+    {
+      "name": "single-16k",
+      "cell": "single-16k-x1",
+      "warmup_waves": 2,
+      "measured_waves": 20,
+      "cooldown_seconds": 1,
+      "require_output_equality": true
+    },
+    {
+      "name": "single-64k",
+      "cell": "single-64k-x1",
+      "warmup_waves": 2,
+      "measured_waves": 10,
+      "cooldown_seconds": 2,
+      "require_output_equality": true
+    }
+  ]
+}

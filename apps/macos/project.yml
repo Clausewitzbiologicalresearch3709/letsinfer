@@ -1,0 +1,54 @@
+name: LetsInfer
+
+options:
+  bundleIdPrefix: ai.letsinfer
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "26.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    MARKETING_VERSION: "0.11.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  LetsInfer:
+    type: application
+    platform: macOS
+    sources:
+      - path: LetsInfer
+        excludes:
+          - Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.letsinfer.macos
+        PRODUCT_NAME: LetsInfer
+        INFOPLIST_FILE: LetsInfer/Info.plist
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: YES
+
+  LetsInferTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: LetsInferTests
+    dependencies:
+      - target: LetsInfer
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.letsinfer.macos.tests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+
+schemes:
+  LetsInfer:
+    build:
+      targets:
+        LetsInfer: all
+        LetsInferTests:
+          - test
+    test:
+      targets:
+        - LetsInferTests

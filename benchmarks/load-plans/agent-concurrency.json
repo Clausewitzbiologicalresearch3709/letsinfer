@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "sample_interval_seconds": 2,
+  "tasks": [
+    {
+      "name": "concurrent-1k-x2",
+      "cell": "concurrent-1k-x2",
+      "warmup_waves": 2,
+      "measured_waves": 20,
+      "cooldown_seconds": 1,
+      "require_output_equality": true
+    },
+    {
+      "name": "concurrent-8k-x4",
+      "cell": "concurrent-8k-x4",
+      "warmup_waves": 2,
+      "measured_waves": 20,
+      "cooldown_seconds": 1,
+      "require_output_equality": true
+    },
+    {
+      "name": "concurrent-16k-x8",
+      "cell": "concurrent-16k-x8",
+      "warmup_waves": 2,
+      "measured_waves": 20,
+      "cooldown_seconds": 2,
+      "require_output_equality": true
+    }
+  ]
+}

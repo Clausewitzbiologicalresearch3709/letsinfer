@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Python environments and packages
+.venv/
+venv/
+env/
+build/
+dist/
+*.egg-info/
+*.whl
+
+# Rust
+target/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.token
+service.json
+
+# Let's Infer runtime data and evidence
+.cache/
+results/
+*.log
+
+# Local agent working context
+context/
+scratchpad/
+.claude/agents/
+claude/agents/
+
+letsinfer.md
+AGENTS.md
+CLAUDE.md
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

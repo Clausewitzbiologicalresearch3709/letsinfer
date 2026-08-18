@@ -1,0 +1,616 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		042282DA8949363BABED9862 /* SiteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF28165513E046A47AF87EE /* SiteDataSource.swift */; };
+		0AD088F1E3727FDD3C623FF6 /* MetricHistoryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253611EDCF62E80B5EF82280 /* MetricHistoryChart.swift */; };
+		161B4CF1C18E3D4605DB3BF6 /* SavedSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DF84E61BA5FF9680A5F6463 /* SavedSite.swift */; };
+		193FA6ED0A362DDF5455E970 /* SSHTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F66E3A08B4750B049676C968 /* SSHTransport.swift */; };
+		2147E33D89ED235335BAB12B /* WatchdogDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C957A8C80575D5EF5872FC3 /* WatchdogDataSource.swift */; };
+		26A4E35CE87BE13295363F4D /* SSHSiteDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73981855DF5DF5514C30E17A /* SSHSiteDataSource.swift */; };
+		37EB7FD007ED82E0CE00F00B /* SiteInfoWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FBEC95B85C8C071B4BB0504 /* SiteInfoWindowController.swift */; };
+		38FECB41E30CF390410F3FD4 /* WatchdogTLSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4299FAE39CF3FE7B63471FEA /* WatchdogTLSClient.swift */; };
+		3D5A257765C2635961661CD0 /* SiteMonitoringController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9EFBBA3F5667EF350D2D545 /* SiteMonitoringController.swift */; };
+		60B683C33A4893E24E3AB4B8 /* ControllerAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51691466A75DF900A5CB06F6 /* ControllerAPIClient.swift */; };
+		6657E6E145D1B6CF0343533E /* OpenSSHTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B7002C5FB9124EAB7838DF /* OpenSSHTransport.swift */; };
+		668CFB7B17C46EFE40E871CB /* MetricHistoryChartTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58C11C9698724CC0B94E029 /* MetricHistoryChartTests.swift */; };
+		6736892E4F691EE0FBBF1507 /* BonjourDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE784F349381628F675D252F /* BonjourDiscovery.swift */; };
+		6A87F605788DFF50DD2D9AA4 /* SiteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9627706F1E82629138DF033B /* SiteStore.swift */; };
+		720489B3517CEA01CC51C4F3 /* MenuBarContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF425F83B0425CE3CAA610E /* MenuBarContentView.swift */; };
+		728C656443EEEA8A2774CD7E /* SiteSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28944516B3347B2BC78282A /* SiteSnapshot.swift */; };
+		8787C2929EBA532FBA7B304B /* ControllerPairing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FBE18FEC262D472BE67D24 /* ControllerPairing.swift */; };
+		88B4481EB0675E3E9DB538C6 /* LetsInferApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37279ED66418A76F9E2D6742 /* LetsInferApp.swift */; };
+		94B27882EC4F4CF33AFCDF29 /* SiteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBAF13F39464C69BC7B7930 /* SiteStoreTests.swift */; };
+		B21AE6668DC88FADD0AB8F24 /* WatchdogProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E789A8EE007F250139BE7ED /* WatchdogProtocol.swift */; };
+		C2FF99B51A2E55C05172F27F /* SiteInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B07B3108FC461179AE34511 /* SiteInfoView.swift */; };
+		C896AB00B4C9BF631DBDD4E5 /* DataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488306950DF4F8B869329BD0 /* DataSourceTests.swift */; };
+		D0E48957C86637387EEB583A /* UtilizationHeatmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92487299E62B685E56130A4A /* UtilizationHeatmap.swift */; };
+		DCFEAD48EB180B4D9E56F4DF /* ControllerAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3324887BFA39DD84804625 /* ControllerAPIClientTests.swift */; };
+		DEAA7355665B7E57FFCDFB2E /* AddSiteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223487BB29A79AA027DE1BB9 /* AddSiteView.swift */; };
+		DF26F76369B60E34EFC91980 /* UtilizationHeatmapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C08F168BC193A370463AD26 /* UtilizationHeatmapTests.swift */; };
+		E6924886231425B1C97BAA08 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A1E7453CEA6AE6CF29D4BA8 /* Assets.xcassets */; };
+		FE1BD689AF5013B6D66EB333 /* AddSiteWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B447C22B911D128B2EAF7B /* AddSiteWindowController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3EB4980D692305989F6CA666 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4AD15BAAC8A90D4650CDFFB9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4E812E0EE8E473351D6D72E2;
+			remoteInfo = LetsInfer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0C957A8C80575D5EF5872FC3 /* WatchdogDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchdogDataSource.swift; sourceTree = "<group>"; };
+		223487BB29A79AA027DE1BB9 /* AddSiteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSiteView.swift; sourceTree = "<group>"; };
+		253611EDCF62E80B5EF82280 /* MetricHistoryChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricHistoryChart.swift; sourceTree = "<group>"; };
+		25FBE18FEC262D472BE67D24 /* ControllerPairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerPairing.swift; sourceTree = "<group>"; };
+		2A1E7453CEA6AE6CF29D4BA8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2FF425F83B0425CE3CAA610E /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
+		37279ED66418A76F9E2D6742 /* LetsInferApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetsInferApp.swift; sourceTree = "<group>"; };
+		3B07B3108FC461179AE34511 /* SiteInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteInfoView.swift; sourceTree = "<group>"; };
+		3B3324887BFA39DD84804625 /* ControllerAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAPIClientTests.swift; sourceTree = "<group>"; };
+		3C08F168BC193A370463AD26 /* UtilizationHeatmapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilizationHeatmapTests.swift; sourceTree = "<group>"; };
+		4299FAE39CF3FE7B63471FEA /* WatchdogTLSClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchdogTLSClient.swift; sourceTree = "<group>"; };
+		488306950DF4F8B869329BD0 /* DataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceTests.swift; sourceTree = "<group>"; };
+		4DF84E61BA5FF9680A5F6463 /* SavedSite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedSite.swift; sourceTree = "<group>"; };
+		4E789A8EE007F250139BE7ED /* WatchdogProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchdogProtocol.swift; sourceTree = "<group>"; };
+		51691466A75DF900A5CB06F6 /* ControllerAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAPIClient.swift; sourceTree = "<group>"; };
+		6F26B00066D0C7946DAEF47D /* LetsInferTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LetsInferTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6FBEC95B85C8C071B4BB0504 /* SiteInfoWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteInfoWindowController.swift; sourceTree = "<group>"; };
+		73981855DF5DF5514C30E17A /* SSHSiteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHSiteDataSource.swift; sourceTree = "<group>"; };
+		92487299E62B685E56130A4A /* UtilizationHeatmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilizationHeatmap.swift; sourceTree = "<group>"; };
+		9627706F1E82629138DF033B /* SiteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteStore.swift; sourceTree = "<group>"; };
+		AE784F349381628F675D252F /* BonjourDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BonjourDiscovery.swift; sourceTree = "<group>"; };
+		B6B447C22B911D128B2EAF7B /* AddSiteWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSiteWindowController.swift; sourceTree = "<group>"; };
+		B9B7002C5FB9124EAB7838DF /* OpenSSHTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenSSHTransport.swift; sourceTree = "<group>"; };
+		B9EFBBA3F5667EF350D2D545 /* SiteMonitoringController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteMonitoringController.swift; sourceTree = "<group>"; };
+		C4C1F739D640111E73C9092D /* LetsInfer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LetsInfer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D28944516B3347B2BC78282A /* SiteSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteSnapshot.swift; sourceTree = "<group>"; };
+		D58C11C9698724CC0B94E029 /* MetricHistoryChartTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricHistoryChartTests.swift; sourceTree = "<group>"; };
+		EDF28165513E046A47AF87EE /* SiteDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteDataSource.swift; sourceTree = "<group>"; };
+		F66E3A08B4750B049676C968 /* SSHTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHTransport.swift; sourceTree = "<group>"; };
+		FCBAF13F39464C69BC7B7930 /* SiteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteStoreTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		03A1CE030BFC8926E639FB0A = {
+			isa = PBXGroup;
+			children = (
+				760B1D5D78109870ED8E3F5B /* LetsInfer */,
+				111B89EBFA5C692F8E7CE2F1 /* LetsInferTests */,
+				3E210B8CA4312286A1990735 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		111B89EBFA5C692F8E7CE2F1 /* LetsInferTests */ = {
+			isa = PBXGroup;
+			children = (
+				3B3324887BFA39DD84804625 /* ControllerAPIClientTests.swift */,
+				488306950DF4F8B869329BD0 /* DataSourceTests.swift */,
+				D58C11C9698724CC0B94E029 /* MetricHistoryChartTests.swift */,
+				FCBAF13F39464C69BC7B7930 /* SiteStoreTests.swift */,
+				3C08F168BC193A370463AD26 /* UtilizationHeatmapTests.swift */,
+			);
+			path = LetsInferTests;
+			sourceTree = "<group>";
+		};
+		2898367AA0B793748F232181 /* Windowing */ = {
+			isa = PBXGroup;
+			children = (
+				B6B447C22B911D128B2EAF7B /* AddSiteWindowController.swift */,
+				6FBEC95B85C8C071B4BB0504 /* SiteInfoWindowController.swift */,
+			);
+			path = Windowing;
+			sourceTree = "<group>";
+		};
+		3138DD617C031C83AAA02E0B /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				9627706F1E82629138DF033B /* SiteStore.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		3E210B8CA4312286A1990735 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C4C1F739D640111E73C9092D /* LetsInfer.app */,
+				6F26B00066D0C7946DAEF47D /* LetsInferTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		44491005DD7FE9830B32AC97 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				253611EDCF62E80B5EF82280 /* MetricHistoryChart.swift */,
+				92487299E62B685E56130A4A /* UtilizationHeatmap.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		4994576117A8822304DA1559 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				223487BB29A79AA027DE1BB9 /* AddSiteView.swift */,
+				2FF425F83B0425CE3CAA610E /* MenuBarContentView.swift */,
+				3B07B3108FC461179AE34511 /* SiteInfoView.swift */,
+				44491005DD7FE9830B32AC97 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		60E94AA85B0C06CE7BB21AB3 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				D28944516B3347B2BC78282A /* SiteSnapshot.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		760B1D5D78109870ED8E3F5B /* LetsInfer */ = {
+			isa = PBXGroup;
+			children = (
+				2A1E7453CEA6AE6CF29D4BA8 /* Assets.xcassets */,
+				37279ED66418A76F9E2D6742 /* LetsInferApp.swift */,
+				E1F2C18E912AA83B312EBBE8 /* DataSources */,
+				B1CA1EFD91E880BDC749E29A /* Discovery */,
+				60E94AA85B0C06CE7BB21AB3 /* Domain */,
+				D4F3F7D856A236DEC52C87B7 /* Models */,
+				CA8591FE31EC8B2021E0994F /* Monitoring */,
+				8A8644554D552A24DDD12341 /* Pairing */,
+				3138DD617C031C83AAA02E0B /* Persistence */,
+				4994576117A8822304DA1559 /* Views */,
+				2898367AA0B793748F232181 /* Windowing */,
+			);
+			path = LetsInfer;
+			sourceTree = "<group>";
+		};
+		8A8644554D552A24DDD12341 /* Pairing */ = {
+			isa = PBXGroup;
+			children = (
+				25FBE18FEC262D472BE67D24 /* ControllerPairing.swift */,
+			);
+			path = Pairing;
+			sourceTree = "<group>";
+		};
+		98FB1BF715EE82F1266277F1 /* Watchdog */ = {
+			isa = PBXGroup;
+			children = (
+				0C957A8C80575D5EF5872FC3 /* WatchdogDataSource.swift */,
+				4E789A8EE007F250139BE7ED /* WatchdogProtocol.swift */,
+				4299FAE39CF3FE7B63471FEA /* WatchdogTLSClient.swift */,
+			);
+			path = Watchdog;
+			sourceTree = "<group>";
+		};
+		B1CA1EFD91E880BDC749E29A /* Discovery */ = {
+			isa = PBXGroup;
+			children = (
+				AE784F349381628F675D252F /* BonjourDiscovery.swift */,
+			);
+			path = Discovery;
+			sourceTree = "<group>";
+		};
+		CA8591FE31EC8B2021E0994F /* Monitoring */ = {
+			isa = PBXGroup;
+			children = (
+				B9EFBBA3F5667EF350D2D545 /* SiteMonitoringController.swift */,
+			);
+			path = Monitoring;
+			sourceTree = "<group>";
+		};
+		D02D3D578987E9ED120A08B0 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				51691466A75DF900A5CB06F6 /* ControllerAPIClient.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		D4F3F7D856A236DEC52C87B7 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4DF84E61BA5FF9680A5F6463 /* SavedSite.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E1F2C18E912AA83B312EBBE8 /* DataSources */ = {
+			isa = PBXGroup;
+			children = (
+				EDF28165513E046A47AF87EE /* SiteDataSource.swift */,
+				D02D3D578987E9ED120A08B0 /* Controller */,
+				EC757244DDADDE253BCA6499 /* SSH */,
+				98FB1BF715EE82F1266277F1 /* Watchdog */,
+			);
+			path = DataSources;
+			sourceTree = "<group>";
+		};
+		EC757244DDADDE253BCA6499 /* SSH */ = {
+			isa = PBXGroup;
+			children = (
+				B9B7002C5FB9124EAB7838DF /* OpenSSHTransport.swift */,
+				73981855DF5DF5514C30E17A /* SSHSiteDataSource.swift */,
+				F66E3A08B4750B049676C968 /* SSHTransport.swift */,
+			);
+			path = SSH;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4E812E0EE8E473351D6D72E2 /* LetsInfer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B67F3B2E773D1B261962E02B /* Build configuration list for PBXNativeTarget "LetsInfer" */;
+			buildPhases = (
+				1129C00EFB5184652E330519 /* Sources */,
+				F2436126AA8F400F20535AA8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LetsInfer;
+			packageProductDependencies = (
+			);
+			productName = LetsInfer;
+			productReference = C4C1F739D640111E73C9092D /* LetsInfer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		53F0917556DB1E5F3076466C /* LetsInferTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 671606D476D47F6DEACD949C /* Build configuration list for PBXNativeTarget "LetsInferTests" */;
+			buildPhases = (
+				4ABE76675B0A27BA5EE41B3C /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CD82C7FF63E0035A73BC0D0A /* PBXTargetDependency */,
+			);
+			name = LetsInferTests;
+			packageProductDependencies = (
+			);
+			productName = LetsInferTests;
+			productReference = 6F26B00066D0C7946DAEF47D /* LetsInferTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4AD15BAAC8A90D4650CDFFB9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					4E812E0EE8E473351D6D72E2 = {
+						ProvisioningStyle = Automatic;
+					};
+					53F0917556DB1E5F3076466C = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 8DD87D46E7AD969790863638 /* Build configuration list for PBXProject "LetsInfer" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 03A1CE030BFC8926E639FB0A;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 3E210B8CA4312286A1990735 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4E812E0EE8E473351D6D72E2 /* LetsInfer */,
+				53F0917556DB1E5F3076466C /* LetsInferTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F2436126AA8F400F20535AA8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E6924886231425B1C97BAA08 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1129C00EFB5184652E330519 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DEAA7355665B7E57FFCDFB2E /* AddSiteView.swift in Sources */,
+				FE1BD689AF5013B6D66EB333 /* AddSiteWindowController.swift in Sources */,
+				6736892E4F691EE0FBBF1507 /* BonjourDiscovery.swift in Sources */,
+				60B683C33A4893E24E3AB4B8 /* ControllerAPIClient.swift in Sources */,
+				8787C2929EBA532FBA7B304B /* ControllerPairing.swift in Sources */,
+				88B4481EB0675E3E9DB538C6 /* LetsInferApp.swift in Sources */,
+				720489B3517CEA01CC51C4F3 /* MenuBarContentView.swift in Sources */,
+				0AD088F1E3727FDD3C623FF6 /* MetricHistoryChart.swift in Sources */,
+				6657E6E145D1B6CF0343533E /* OpenSSHTransport.swift in Sources */,
+				26A4E35CE87BE13295363F4D /* SSHSiteDataSource.swift in Sources */,
+				193FA6ED0A362DDF5455E970 /* SSHTransport.swift in Sources */,
+				161B4CF1C18E3D4605DB3BF6 /* SavedSite.swift in Sources */,
+				042282DA8949363BABED9862 /* SiteDataSource.swift in Sources */,
+				C2FF99B51A2E55C05172F27F /* SiteInfoView.swift in Sources */,
+				37EB7FD007ED82E0CE00F00B /* SiteInfoWindowController.swift in Sources */,
+				3D5A257765C2635961661CD0 /* SiteMonitoringController.swift in Sources */,
+				728C656443EEEA8A2774CD7E /* SiteSnapshot.swift in Sources */,
+				6A87F605788DFF50DD2D9AA4 /* SiteStore.swift in Sources */,
+				D0E48957C86637387EEB583A /* UtilizationHeatmap.swift in Sources */,
+				2147E33D89ED235335BAB12B /* WatchdogDataSource.swift in Sources */,
+				B21AE6668DC88FADD0AB8F24 /* WatchdogProtocol.swift in Sources */,
+				38FECB41E30CF390410F3FD4 /* WatchdogTLSClient.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4ABE76675B0A27BA5EE41B3C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCFEAD48EB180B4D9E56F4DF /* ControllerAPIClientTests.swift in Sources */,
+				C896AB00B4C9BF631DBDD4E5 /* DataSourceTests.swift in Sources */,
+				668CFB7B17C46EFE40E871CB /* MetricHistoryChartTests.swift in Sources */,
+				94B27882EC4F4CF33AFCDF29 /* SiteStoreTests.swift in Sources */,
+				DF26F76369B60E34EFC91980 /* UtilizationHeatmapTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CD82C7FF63E0035A73BC0D0A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4E812E0EE8E473351D6D72E2 /* LetsInfer */;
+			targetProxy = 3EB4980D692305989F6CA666 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		01F3D66DAD46692E57EE9919 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.letsinfer.macos.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LetsInfer.app/Contents/MacOS/LetsInfer";
+			};
+			name = Debug;
+		};
+		067375247DEA1A532C0DDF2A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = LetsInfer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.letsinfer.macos;
+				PRODUCT_NAME = LetsInfer;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2846D40305718872A8B7638F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = LetsInfer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.letsinfer.macos;
+				PRODUCT_NAME = LetsInfer;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		34A290675301B1675E37256E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.letsinfer.macos.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LetsInfer.app/Contents/MacOS/LetsInfer";
+			};
+			name = Release;
+		};
+		36350203258117606C0B82B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		EB952D5248340C97A333BD2F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.11.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		671606D476D47F6DEACD949C /* Build configuration list for PBXNativeTarget "LetsInferTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01F3D66DAD46692E57EE9919 /* Debug */,
+				34A290675301B1675E37256E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8DD87D46E7AD969790863638 /* Build configuration list for PBXProject "LetsInfer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB952D5248340C97A333BD2F /* Debug */,
+				36350203258117606C0B82B2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B67F3B2E773D1B261962E02B /* Build configuration list for PBXNativeTarget "LetsInfer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2846D40305718872A8B7638F /* Debug */,
+				067375247DEA1A532C0DDF2A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4AD15BAAC8A90D4650CDFFB9 /* Project object */;
+}

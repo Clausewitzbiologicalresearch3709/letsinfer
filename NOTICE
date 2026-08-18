@@ -1,0 +1,6 @@
+Let's Infer-authored source code is licensed under AGPL-3.0-only.
+
+The vLLM patch series describes changes to Apache-2.0-licensed vLLM; upstream
+files, DwarfStar, runtime images, model checkpoints, and other third-party
+dependencies retain their respective licenses. Model checkpoints and
+third-party container layers are not distributed by this repository.

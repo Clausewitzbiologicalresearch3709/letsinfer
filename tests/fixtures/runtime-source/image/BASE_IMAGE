@@ -1,0 +1,2 @@
+# Synthetic digest-pinned engine base used only by core tests.
+registry.example/engine@sha256:8888888888888888888888888888888888888888888888888888888888888888
