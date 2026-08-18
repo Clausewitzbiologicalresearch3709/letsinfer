@@ -31,7 +31,7 @@ Let's Infer verifies and stages the new runtime before stopping the old service.
 It then performs the same transactional service replacement as installation:
 exact artifacts, model, image, target, memory, Watchdog, health, authentication,
 and model identity must pass. A failed activation restores the prior config,
-units, immutable control bundle, and running service.
+units, immutable core/runtime service bundle, and running service.
 
 Successful selections retain the previous runtime object and receipt:
 

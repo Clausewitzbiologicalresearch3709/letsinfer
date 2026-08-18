@@ -371,11 +371,11 @@ and any final image identity mismatch,
 reproducibly builds and verifies the architecture-matched Rust wheel from the
 pinned Cargo lock and builder image, atomically installs only
 manifest-pinned runtime artifacts, creates local TLS/API credentials, writes
-private service configuration, builds and tests the manifest-pinned native
-watchdog, and enables the user systemd services. The
-controller, exact manifest, and every manifest-pinned source artifact are
-validated and atomically staged under
-`~/.local/share/letsinfer/control/<manifest-sha256>`; runtime plugins are staged
+private service configuration, builds and tests the core-release Watchdog,
+and enables the user systemd services. The
+complete core source manifest and exact runtime manifest are independently
+validated and atomically staged under a service-bundle identity derived from
+both digests in `~/.local/share/letsinfer/control/`; runtime plugins are staged
 under a release-and-manifest-specific path. The systemd units execute that
 immutable bundle rather than the development checkout.
 Python bytecode generation is disabled in both the controller and service unit,
@@ -574,8 +574,7 @@ Registry publication remains product work.
 - [`bin/letsinfer-install`](bin/letsinfer-install) installs the immutable
   user-local CLI; [`bin/letsinfer`](bin/letsinfer) is the source-tree launcher.
 - [`tools/`](tools/) contains deterministic public-source packaging,
-  verification, namespace-audit, and CLI-install release tooling. It is not
-  part of runtime control bundles.
+  verification, namespace-audit, and CLI-install release tooling.
 - [`documentation/`](documentation/) contains the user, runtime-author, and
   operations guides.
 - [`connectors/`](connectors/) contains optional engine-facing integrations.
@@ -609,7 +608,7 @@ Registry publication remains product work.
 
 ## Project status
 
-The current source is `0.11.0-rc.2`. The logical-site, gateway, membership,
+The current source is `0.11.0-rc.3`. The logical-site, gateway, membership,
 orchestration, benchmark, Watchdog, and native Mac source suites pass on their
 applicable platforms. Core ships no model runtime. The current external
 DS4/DwarfStar runtime candidate is activation-blocked until its Linux/DGX Spark

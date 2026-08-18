@@ -38,10 +38,10 @@ DWARFSTAR_MANIFEST_PATH = TEST_MANIFESTS / "dwarfstar.json"
 
 @contextlib.contextmanager
 def materialized_release_sources(manifest: dict):
-    """Build the merged core/runtime source tree used by fixture verification."""
+    """Build the runtime-owned source tree used by fixture verification."""
     with tempfile.TemporaryDirectory() as directory:
         root = pathlib.Path(directory)
-        for artifact in manifest["source_artifacts"]:
+        for artifact in manifest.get("source_artifacts", []):
             relative = pathlib.Path(artifact["path"])
             candidates = (
                 letsinfer.source_root() / relative,
@@ -87,7 +87,7 @@ class ManifestTests(unittest.TestCase):
             found = letsinfer.manifests(root)
         self.assertEqual([path.name for path, _ in found], ["vllm.json"])
 
-    def test_every_runtime_ships_the_complete_engine_neutral_control_plane(self) -> None:
+    def test_runtime_manifests_do_not_pin_the_core_control_plane(self) -> None:
         required_paths = list((REPOSITORY_ROOT / "core").rglob("*.py"))
         required_paths.extend((REPOSITORY_ROOT / "benchmarks").glob("*.py"))
         required_paths.extend(
@@ -102,10 +102,12 @@ class ManifestTests(unittest.TestCase):
         }
         required.update({"bin/letsinfer", "bin/letsinfer-recovery"})
         for path, manifest in letsinfer.manifests(TEST_MANIFESTS):
-            shipped = {entry["path"] for entry in manifest["source_artifacts"]}
+            shipped = {
+                entry["path"] for entry in manifest.get("source_artifacts", [])
+            }
             self.assertFalse(
-                required - shipped,
-                f"{path.name} omits control-plane files: {sorted(required - shipped)}",
+                required & shipped,
+                f"{path.name} pins core files: {sorted(required & shipped)}",
             )
 
     def test_core_has_no_default_model_registry(self) -> None:
@@ -182,7 +184,7 @@ class ManifestTests(unittest.TestCase):
         self.assertIn("kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly", source)
 
     def test_release_identity_is_shared_by_core_watchdog_and_mac(self) -> None:
-        self.assertEqual(letsinfer.PRODUCT_VERSION, "0.11.0-rc.2")
+        self.assertEqual(letsinfer.PRODUCT_VERSION, "0.11.0-rc.3")
         watchdog_main = (
             REPOSITORY_ROOT / "watchdog/src/main_linux.c"
         ).read_text(encoding="utf-8")
@@ -201,11 +203,11 @@ class ManifestTests(unittest.TestCase):
         mac_discovery = (
             REPOSITORY_ROOT / "apps/macos/LetsInfer/Discovery/BonjourDiscovery.swift"
         ).read_text(encoding="utf-8")
-        self.assertIn('#define WATCHDOG_VERSION "0.11.0-rc.2"', watchdog_main)
+        self.assertIn('#define WATCHDOG_VERSION "0.11.0-rc.3"', watchdog_main)
         self.assertIn("project(letsinfer_watchdog VERSION 0.11.0 LANGUAGES C)", watchdog_build)
         self.assertIn('MARKETING_VERSION: "0.11.0"', mac_project)
         self.assertEqual(generated_project.count("MARKETING_VERSION = 0.11.0;"), 2)
-        self.assertIn("<string>0.11.0-rc.2</string>", mac_info)
+        self.assertIn("<string>0.11.0-rc.3</string>", mac_info)
         self.assertIn("<string>_letsinfer._tcp</string>", mac_info)
         self.assertNotIn("<string>_watchdog._tcp</string>", mac_info)
         self.assertNotIn("<string>_ssh._tcp</string>", mac_info)
@@ -1385,7 +1387,13 @@ class InstallTests(unittest.TestCase):
                 artifact_roots=(letsinfer.source_root(), RUNTIME_SOURCE_FIXTURE),
             )
             digest = letsinfer.sha256_file(manifest_path)
-            self.assertEqual(root, parent / digest)
+            _records, _core_manifest, core_identity = letsinfer._core_release(
+                letsinfer.source_root()
+            )
+            self.assertEqual(
+                root,
+                parent / letsinfer._control_bundle_identity(core_identity, digest),
+            )
             self.assertEqual(root.stat().st_mode & 0o777, 0o700)
             self.assertEqual(
                 installed_manifest,
@@ -1403,6 +1411,53 @@ class InstallTests(unittest.TestCase):
             )
             self.assertEqual((reused_root, reused_manifest), (root, installed_manifest))
 
+    def test_core_update_rebinds_the_same_runtime_manifest(self) -> None:
+        manifest_path = VLLM_MANIFEST_PATH
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = pathlib.Path(directory)
+            updated_core = temporary / "updated-core"
+            records, _manifest, _identity = letsinfer._core_release(
+                letsinfer.source_root()
+            )
+            for record in records:
+                target = updated_core / record["path"]
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(record["content"])
+                target.chmod(record["mode"])
+            readme = updated_core / "README.md"
+            readme.write_text(
+                readme.read_text(encoding="utf-8") + "\nCore-only test revision.\n",
+                encoding="utf-8",
+            )
+
+            parent = temporary / "control"
+            first_root, first_manifest = letsinfer.install_control_bundle(
+                manifest_path,
+                manifest,
+                control_parent=parent,
+                artifact_roots=(letsinfer.source_root(), RUNTIME_SOURCE_FIXTURE),
+            )
+            second_root, second_manifest = letsinfer.install_control_bundle(
+                manifest_path,
+                manifest,
+                control_parent=parent,
+                artifact_roots=(letsinfer.source_root(), RUNTIME_SOURCE_FIXTURE),
+                core_source_root=updated_core,
+            )
+
+            self.assertNotEqual(first_root, second_root)
+            self.assertEqual(
+                letsinfer.sha256_file(first_manifest),
+                letsinfer.sha256_file(second_manifest),
+            )
+            letsinfer.validate_control_bundle(
+                first_root, first_manifest, letsinfer.sha256_file(manifest_path)
+            )
+            letsinfer.validate_control_bundle(
+                second_root, second_manifest, letsinfer.sha256_file(manifest_path)
+            )
+
     def test_control_bundle_tampering_fails_closed(self) -> None:
         manifest_path = VLLM_MANIFEST_PATH
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -1413,7 +1468,9 @@ class InstallTests(unittest.TestCase):
                 control_parent=pathlib.Path(directory) / "control",
                 artifact_roots=(letsinfer.source_root(), RUNTIME_SOURCE_FIXTURE),
             )
-            (root / "core/cli.py").write_text("tampered\n", encoding="utf-8")
+            core_cli = root / "core/cli.py"
+            core_cli.chmod(0o600)
+            core_cli.write_text("tampered\n", encoding="utf-8")
             with self.assertRaisesRegex(letsinfer.LetsInferError, "mismatch"):
                 letsinfer.validate_control_bundle(
                     root,

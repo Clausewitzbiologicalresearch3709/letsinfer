@@ -196,6 +196,7 @@ GROUP_MEMBER_LABEL = "io.letsinfer.group-member"
 GROUP_ROLE_LABEL = "io.letsinfer.group-role"
 SECURITY_PROFILE = "tls-api-key-v1"
 SERVICE_CONFIG_VERSION = 3
+CORE_SOURCE_MANIFEST = "SOURCE-MANIFEST.json"
 SERVICE_NAME = "letsinfer.service"
 ENGINE_SERVICE_NAME = "letsinfer-engine.service"
 GATEWAY_SERVICE_NAME = "letsinfer-gateway.service"
@@ -483,7 +484,7 @@ def _validate_stable_evidence(
 ) -> None:
     artifacts = {
         entry["path"]: entry["sha256"]
-        for entry in manifest["source_artifacts"]
+        for entry in manifest.get("source_artifacts", [])
     }
     gate = manifest["serving"]["gate"]
     common = _require(gate, "common", dict, "manifest.serving.gate")
@@ -637,7 +638,9 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
     if distribution == "local-image-id" and image["reference"] != immutable_id:
         raise LetsInferError("local image reference must equal its immutable image ID")
 
-    _validate_artifact_entries(manifest.get("source_artifacts"), "source_artifacts")
+    source_artifacts = manifest.get("source_artifacts")
+    if source_artifacts is not None:
+        _validate_artifact_entries(source_artifacts, "source_artifacts")
     try:
         adapter = adapter_for(manifest)
     except EngineManifestError as error:
@@ -1176,40 +1179,13 @@ def verify_artifacts(root: pathlib.Path, entries: Iterable[dict[str, str]]) -> N
 
 
 def verify_release_sources(manifest: dict[str, Any], root: pathlib.Path) -> None:
-    verify_artifacts(root, manifest["source_artifacts"])
-    pinned_paths = {entry["path"] for entry in manifest["source_artifacts"]}
-    required_control_sources = {
-        "benchmarks/prompt_generator.py",
-        "benchmarks/prompts/concurrency.md",
-        "benchmarks/prompts/context.md",
-        "benchmarks/openai_matrix.py",
-        "bin/letsinfer",
-        "bin/letsinfer-recovery",
-        "core/__init__.py",
-        "core/cli.py",
-        "core/ui.py",
-        "core/engines.py",
-        "core/runtime_packs.py",
-        "core/actions.py",
-        "core/site/__init__.py",
-        "core/site/inventory.py",
-        "core/site/state.py",
-        "core/site/topology.py",
-        "core/gateway/__init__.py",
-        "core/gateway/server.py",
-        "watchdog/CMakeLists.txt",
-        "watchdog/src/main_linux.c",
-        "watchdog/src/server_linux.c",
-    }
-    if not required_control_sources.issubset(pinned_paths):
-        raise LetsInferError("manifest omits a Let's Infer control-plane source artifact")
-    for relative in required_control_sources & {"bin/letsinfer", "bin/letsinfer-recovery"}:
-        if not os.access(root / relative, os.X_OK):
-            raise LetsInferError(f"control-plane executable bit is missing: {root / relative}")
+    artifacts = manifest.get("source_artifacts", [])
+    verify_artifacts(root, artifacts)
+    pinned_paths = {entry["path"] for entry in artifacts}
     adapter = adapter_for(manifest)
     if adapter.requires_runtime_plugins:
         source_hashes = {
-            entry["path"]: entry["sha256"] for entry in manifest["source_artifacts"]
+            entry["path"]: entry["sha256"] for entry in artifacts
         }
         for entry in manifest["runtime_plugins"]["artifacts"]:
             if entry["path"].endswith((".whl", ".so")):
@@ -1219,7 +1195,7 @@ def verify_release_sources(manifest: dict[str, Any], root: pathlib.Path) -> None
                 raise LetsInferError(
                     f"runtime artifact {entry['path']} has no explicit source_path"
                 )
-            if source_hashes.get(source_path) != entry["sha256"]:
+            if source_path in source_hashes and source_hashes[source_path] != entry["sha256"]:
                 raise LetsInferError(
                     f"runtime artifact must have an identical source pin: {source_path}"
                 )
@@ -1243,27 +1219,11 @@ def verify_release_sources(manifest: dict[str, Any], root: pathlib.Path) -> None
     expected.update(f"patches/{name.removesuffix('.patch')}.verify.py" for name in series)
     pinned = {
         entry["path"]
-        for entry in manifest["source_artifacts"]
+        for entry in artifacts
         if entry["path"].startswith("patches/") and entry["path"] != "patches/series"
     }
     if pinned != expected:
         raise LetsInferError("manifest patch artifacts do not exactly match patches/series")
-
-    builder_root_relative = pathlib.Path(
-        manifest["runtime_plugins"]["wheel_builder"]["source_root"]
-    )
-    builder_root = root / builder_root_relative
-    builder_sources = {
-        str(path.relative_to(root))
-        for path in builder_root.rglob("*")
-        if path.is_file()
-        and not path.is_symlink()
-        and not {"target", "dist", "__pycache__"}.intersection(path.parts)
-    }
-    if not builder_sources.issubset(pinned_paths):
-        missing = sorted(builder_sources - pinned_paths)
-        raise LetsInferError(f"manifest omits wheel build sources: {', '.join(missing)}")
-
 
 def manifests(
     directory: pathlib.Path | None = None,
@@ -2260,6 +2220,36 @@ def _fsync_path(path: pathlib.Path) -> None:
         os.close(descriptor)
 
 
+def _core_release(
+    root: pathlib.Path,
+) -> tuple[list[dict[str, Any]], dict[str, Any], str]:
+    from tools.source_archive import (  # Local release tooling, loaded only here.
+        SourceArchiveError,
+        public_files,
+        source_manifest,
+    )
+
+    try:
+        records = public_files(root)
+        manifest = source_manifest(records)
+    except SourceArchiveError as error:
+        raise LetsInferError(f"core release is invalid: {error}") from error
+    identity = hashlib.sha256(canonical_bytes(manifest)).hexdigest()
+    return records, manifest, identity
+
+
+def _control_bundle_identity(core_identity: str, manifest_identity: str) -> str:
+    return hashlib.sha256(
+        canonical_bytes(
+            {
+                "schema_version": 1,
+                "core_source_sha256": core_identity,
+                "runtime_manifest_sha256": manifest_identity,
+            }
+        )
+    ).hexdigest()
+
+
 def validate_control_bundle(
     root: pathlib.Path,
     manifest_path: pathlib.Path,
@@ -2272,8 +2262,15 @@ def validate_control_bundle(
     details = root.stat()
     if details.st_uid != os.getuid() or stat.S_IMODE(details.st_mode) & 0o077:
         raise LetsInferError(f"control bundle root must be private and user-owned: {root}")
-    if require_hash_name and root.name != expected_manifest_sha256:
-        raise LetsInferError("control bundle directory does not match its manifest hash")
+    _records, generated_core_manifest, core_identity = _core_release(root)
+    core_manifest_path = _contained_regular_file(root, CORE_SOURCE_MANIFEST)
+    if read_json(core_manifest_path) != generated_core_manifest:
+        raise LetsInferError("control bundle core source manifest mismatch")
+    bundle_identity = _control_bundle_identity(
+        core_identity, expected_manifest_sha256
+    )
+    if require_hash_name and root.name != bundle_identity:
+        raise LetsInferError("control bundle directory does not match its bundle identity")
     try:
         relative_manifest = manifest_path.resolve(strict=True).relative_to(
             root.resolve(strict=True)
@@ -2295,14 +2292,19 @@ def install_control_bundle(
     *,
     control_parent: pathlib.Path | None = None,
     artifact_roots: Sequence[pathlib.Path] | None = None,
+    core_source_root: pathlib.Path | None = None,
 ) -> tuple[pathlib.Path, pathlib.Path]:
     sources = tuple(artifact_roots or (source_root(),))
     if not sources:
         raise LetsInferError("control bundle requires at least one artifact source root")
+    core_records, core_manifest, core_identity = _core_release(
+        core_source_root or source_root()
+    )
     manifest_sha = sha256_file(manifest_path)
+    bundle_identity = _control_bundle_identity(core_identity, manifest_sha)
     parent = control_parent or default_control_parent()
     ensure_private_directory(parent)
-    destination = parent / manifest_sha
+    destination = parent / bundle_identity
     destination_manifest = destination / "releases" / manifest_path.name
     if destination.exists():
         _, installed = validate_control_bundle(
@@ -2316,12 +2318,36 @@ def install_control_bundle(
         return destination, destination_manifest
 
     staging = pathlib.Path(
-        tempfile.mkdtemp(prefix=f".{manifest_sha}.install-", dir=parent)
+        tempfile.mkdtemp(prefix=f".{bundle_identity}.install-", dir=parent)
     )
     staging.chmod(0o700)
     try:
         targets: list[pathlib.Path] = []
-        for entry in manifest["source_artifacts"]:
+        for record in core_records:
+            target = staging / record["path"]
+            target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            descriptor = os.open(
+                target,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                0o500 if record["mode"] & 0o111 else 0o400,
+            )
+            with os.fdopen(descriptor, "wb") as handle:
+                handle.write(record["content"])
+                handle.flush()
+                os.fsync(handle.fileno())
+            targets.append(target)
+        core_manifest_path = staging / CORE_SOURCE_MANIFEST
+        descriptor = os.open(
+            core_manifest_path,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+            0o400,
+        )
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(canonical_bytes(core_manifest))
+            handle.flush()
+            os.fsync(handle.fileno())
+        targets.append(core_manifest_path)
+        for entry in manifest.get("source_artifacts", []):
             source_path: pathlib.Path | None = None
             for source in sources:
                 try:
@@ -2336,14 +2362,20 @@ def install_control_bundle(
                     f"no exact source is available for pinned artifact {entry['path']}"
                 )
             target = staging / entry["path"]
+            if target.exists():
+                raise LetsInferError(
+                    f"runtime artifact collides with core source: {entry['path']}"
+                )
             target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
             shutil.copy2(source_path, target)
+            target.chmod(0o500 if os.access(source_path, os.X_OK) else 0o400)
             targets.append(target)
         staged_manifest = staging / "releases" / manifest_path.name
         if staged_manifest in targets:
             raise LetsInferError("release manifest collides with a source artifact")
         staged_manifest.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         shutil.copy2(manifest_path, staged_manifest)
+        staged_manifest.chmod(0o400)
         targets.append(staged_manifest)
         for target in targets:
             _fsync_path(target)
@@ -2378,12 +2410,14 @@ def install_control_bundle(
 def purge_control_bundle(config: dict[str, Any]) -> None:
     root = pathlib.Path(config["source_root"]).expanduser()
     manifest_path = pathlib.Path(config["manifest_path"]).expanduser()
-    expected = default_control_parent() / config["manifest_sha256"]
-    if root != expected:
+    expected_parent = default_control_parent().resolve(strict=True)
+    try:
+        root.resolve(strict=True).relative_to(expected_parent)
+    except ValueError as error:
         raise LetsInferError(f"refusing to purge nonstandard control root: {root}")
     validate_control_bundle(root, manifest_path, config["manifest_sha256"])
     shutil.rmtree(root)
-    _fsync_path(expected.parent)
+    _fsync_path(expected_parent)
 
 
 def verify_watchdog_runtime(
@@ -5310,33 +5344,14 @@ def configured_release(
 
 def bind_config_to_control_bundle(config: dict[str, Any]) -> dict[str, Any]:
     manifest_sha = config["manifest_sha256"]
-    candidate_root = default_control_parent() / manifest_sha
-    if candidate_root.is_dir():
-        manifest_path, manifest = resolve_model(
-            config["release"], config["engine"], candidate_root / "releases"
-        )
-        validate_control_bundle(candidate_root, manifest_path, manifest_sha)
-    else:
-        source = pathlib.Path(config["source_root"]).expanduser()
-        manifest_path = pathlib.Path(config["manifest_path"]).expanduser()
-        try:
-            current_manifest_sha = sha256_file(manifest_path)
-        except OSError as error:
-            raise LetsInferError(
-                f"cannot retain previous service manifest {manifest_path}: {error}"
-            ) from error
-        if current_manifest_sha != manifest_sha:
-            raise LetsInferError(
-                "previous service source changed before a rollback bundle was retained"
-            )
-        manifest = read_json(manifest_path)
-        verify_release_sources(manifest, source)
-        manifest_path, manifest = resolve_model(
-            config["release"], config["engine"], source / "releases"
-        )
-        candidate_root, manifest_path = install_control_bundle(
-            manifest_path, manifest
-        )
+    source = pathlib.Path(config["source_root"]).expanduser()
+    manifest_path = pathlib.Path(config["manifest_path"]).expanduser()
+    manifest_path, manifest = validate_control_bundle(
+        source, manifest_path, manifest_sha
+    )
+    candidate_root, manifest_path = install_control_bundle(
+        manifest_path, manifest
+    )
     if manifest["model"]["alias"] != config["model"]:
         raise LetsInferError("previous service bundle model alias is inconsistent")
     bound = dict(config)
@@ -8337,10 +8352,12 @@ def doctor(arguments: argparse.Namespace) -> int:
         record("source-identity", False, str(error))
 
     control_root = pathlib.Path(config["source_root"]).expanduser()
+    _records, _core_manifest, core_identity = _core_release(control_root)
     record(
         "immutable-control-bundle",
-        control_root.name == config["manifest_sha256"],
-        str(control_root),
+        control_root.name
+        == _control_bundle_identity(core_identity, config["manifest_sha256"]),
+        f"core=sha256:{core_identity} root={control_root}",
     )
     unit_root = pathlib.Path.home() / ".config/systemd/user"
     expected_units = {

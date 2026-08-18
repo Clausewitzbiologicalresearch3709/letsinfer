@@ -6,9 +6,9 @@ and installation; `benchmarks/` covers the engine-neutral runners.
 
 `fixtures/manifests/` uses synthetic model, image, and target identities while
 retaining one schema fixture per registered adapter. `fixtures/runtime-source/`
-is a tiny runtime-owned source root used to prove that immutable control
-bundles can combine runtime-owned artifacts with generic Let's Infer files. None
-of these fixtures is discoverable as a production runtime.
+is a tiny runtime-owned source root used to prove that runtime artifacts remain
+separate from independently identified core bundles. None of these fixtures is
+discoverable as a production runtime.
 
 Model checkpoints, engine forks, kernels, target tuning, benchmark plans,
 materialized prompts, and qualification evidence do not belong here.

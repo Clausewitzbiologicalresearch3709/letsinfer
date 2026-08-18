@@ -93,6 +93,13 @@ The corresponding release manifest continues to pin:
 - Watchdog safety thresholds; and
 - qualification evidence.
 
+It does not enumerate or hash-pin Let's Infer core files. The runtime declares
+only `core_compatibility.api`; core verifies its own complete source manifest.
+At activation, Let's Infer combines the independently verified core identity
+and runtime-manifest identity into an immutable service-bundle identity. A core
+update therefore creates a new service bundle without changing the runtime
+pack, image, benchmark record, or catalog entry.
+
 A persistent-cache release declares `cache.replay_output_policy` as either
 `all-phases-exact` or `restored-repeat-exact`. This tells the generic replay
 verifier whether cold, hot, and restored outputs must all match, or whether
@@ -119,7 +126,7 @@ leaves CPU placement to the host; core never guesses an affinity mask.
 
 Installed objects live below `~/.local/share/letsinfer/runtimes/objects/` by
 runtime digest. Private selection receipts record the chosen model/engine/target,
-version, digest, canonical target-contract SHA-256, immutable control bundle,
+version, digest, canonical target-contract SHA-256, immutable core bundle,
 source policy, install timestamp, hashed hardware fingerprint, cryptographic
 installation ID, and up to 20 prior receipts for rollback. The fingerprint
 hashes the host machine ID and physical NVIDIA GPU UUIDs; their raw values are

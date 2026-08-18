@@ -230,11 +230,11 @@ struct DataSourceTests {
         #expect(decodedCapabilities.physicalGPUCount == 1)
 
         var status = Data()
-        Self.writeString(field: 1, value: "0.11.0-rc.2", to: &status)
+        Self.writeString(field: 1, value: "0.11.0-rc.3", to: &status)
         Self.writeString(field: 2, value: "fixture-model", to: &status)
         Self.writeString(field: 3, value: "dwarfstar", to: &status)
         Self.writeString(field: 4, value: "fixture-runtime", to: &status)
-        Self.writeString(field: 5, value: "0.11.0-rc.2", to: &status)
+        Self.writeString(field: 5, value: "0.11.0-rc.3", to: &status)
         Self.writeString(field: 6, value: String(repeating: "a", count: 64), to: &status)
         Self.writeString(field: 7, value: "letsinfer-prefix", to: &status)
         Self.writeUInt(field: 8, value: 1, to: &status)
@@ -257,7 +257,7 @@ struct DataSourceTests {
             Issue.record("Expected typed Let's Infer status")
             return
         }
-        #expect(decodedStatus.release == "0.11.0-rc.2")
+        #expect(decodedStatus.release == "0.11.0-rc.3")
         #expect(decodedStatus.installationID == String(repeating: "b", count: 64))
         #expect(decodedStatus.engine == "dwarfstar")
         #expect(decodedStatus.protectionArmed)
