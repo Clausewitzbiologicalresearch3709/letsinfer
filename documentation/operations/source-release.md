@@ -82,8 +82,8 @@ An RC or historical release uses its explicit version:
 
 ```bash
 curl -fsSL \
-  https://github.com/letsinferlabs/letsinfer/releases/download/v0.11.0-rc.3/install.sh \
-  | sh -s -- --version 0.11.0-rc.3
+  https://github.com/letsinferlabs/letsinfer/releases/download/v0.11.0-rc.4/install.sh \
+  | sh -s -- --version 0.11.0-rc.4
 ```
 
 The macOS application has separate version/build metadata, a protected
