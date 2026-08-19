@@ -67,7 +67,7 @@ jobs:
           done
 
   validate-macos:
-    name: Validate macOS core
+    name: Validate portable core
     runs-on: macos-14
     steps:
       - name: Check out exact revision
