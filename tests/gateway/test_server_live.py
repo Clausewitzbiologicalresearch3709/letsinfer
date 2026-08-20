@@ -307,6 +307,41 @@ class LiveGatewayTests(unittest.TestCase):
             }
         })
 
+    def test_impossible_context_fails_before_memory_pressure_queue(self) -> None:
+        with state.SiteStore(identity=self.identity) as store:
+            _, unbounded_token = store.create_key("unbounded", models=[MODEL])
+            for index in range(len(self.backends)):
+                member_id = f"{index + 1:032x}"
+                set_member_facts(
+                    store,
+                    member_id,
+                    routing_facts(member_id, memory_pressure=True),
+                )
+        for backend in self.backends:
+            backend.prompt_tokens = 250
+        self.gateway.policy.reload(force=True)
+
+        started = time.monotonic()
+        with self.assertRaises(urllib.error.HTTPError) as raised:
+            self._request(
+                "/v1/chat/completions",
+                body={
+                    "model": MODEL,
+                    "messages": [{"role": "user", "content": "too long"}],
+                    "max_tokens": 10,
+                },
+                token=unbounded_token,
+            )
+        self.assertEqual(raised.exception.code, 400)
+        self.assertLess(time.monotonic() - started, 0.75)
+        self.assertEqual(json.loads(raised.exception.read()), {
+            "error": {
+                "message": "request exceeds every qualified placement's context capacity",
+                "type": "context_length_exceeded",
+            }
+        })
+        self.assertEqual([backend.requests for backend in self.backends], [[], []])
+
     def test_browser_preflight_and_model_listing_preserve_api_key_auth(self) -> None:
         preflight = urllib.request.Request(
             self.base_url + "/v1/models",

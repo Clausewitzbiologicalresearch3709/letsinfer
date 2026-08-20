@@ -218,9 +218,14 @@ telemetry feed for scheduler, throughput, history, and system readings.
 
 Host memory pressure is a degraded admission state, not an API-process crash.
 Model discovery remains available, the dashboard names the available-memory
-and runtime-floor values, and inference receives a structured
-`memory_pressure` 503 while new work is paused. A protection trip remains a
-hard failure and still requires `letsinfer recover`.
+and runtime-floor values, and new inference waits in the normal bounded queue
+until headroom returns. If the queue timeout expires, the request receives a
+structured `memory_pressure` 503; the healthy runtime is not stopped. Exact
+token counting happens before that pressure wait when the adapter declares the
+capability, so a chat that cannot fit any qualified placement receives an
+immediate `context_length_exceeded` 400 and is never dispatched. Watchdog
+contains only a hard emergency-floor or observed cgroup limit/OOM event. Such
+a protection trip remains a hard failure and still requires `letsinfer recover`.
 A missing measurement is rendered as unavailable rather than inferred.
 
 `releases` lists installed runtime manifests, not test fixtures or a bundled
