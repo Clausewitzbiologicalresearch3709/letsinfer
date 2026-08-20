@@ -544,7 +544,7 @@ class GatewayPolicyTests(unittest.TestCase):
             )
         policy.reload(force=True)
         self.assertTrue(policy.backends[0].memory_pressure)
-        with self.assertRaisesRegex(server.GatewayError, "queue timeout"):
+        with self.assertRaisesRegex(server.AdmissionError, "memory headroom"):
             policy.acquire_backend("fixture-model", prefix_key=None, timeout=0.01)
 
         with state.SiteStore(identity=self.identity) as store:

@@ -482,10 +482,19 @@ class PolicySnapshot:
                     token_count_protocol=token_count_protocol,
                     max_active_requests=max_active_requests,
                     max_context_tokens=max_context_tokens,
+                    # Memory pressure pauses admission, but it does not make
+                    # an otherwise healthy model disappear from discovery.
+                    # A protection trip remains a hard health failure.
                     healthy=(
                         endpoint.get("healthy", True) is True
-                        and live_health["state"] == "healthy"
                         and live_health["protection_trip"] is False
+                        and (
+                            live_health["state"] == "healthy"
+                            or (
+                                live_health["state"] == "degraded"
+                                and live_health["memory_pressure"] is True
+                            )
+                        )
                     ),
                     memory_pressure=(
                         endpoint.get("memory_pressure", False) is True
@@ -633,6 +642,17 @@ class PolicySnapshot:
                     return selected, time.monotonic() - started
             remaining = deadline - time.monotonic()
             if remaining <= 0:
+                if any(
+                    backend.model == model
+                    and backend.healthy
+                    and backend.memory_pressure
+                    for backend in self.backends
+                ):
+                    raise AdmissionError(
+                        "qualified placement is waiting for memory headroom",
+                        status=503,
+                        code="memory_pressure",
+                    )
                 raise GatewayError("no qualified placement became available before queue timeout")
             with self.condition:
                 self.condition.wait(timeout=min(0.25, remaining))
@@ -1245,7 +1265,6 @@ class GatewayHandler(http.server.BaseHTTPRequestHandler):
                 backend.model
                 for backend in self.gateway.policy.backends
                 if backend.healthy
-                and not backend.memory_pressure
                 and self.gateway.policy.backend_available(backend)
             }
             alias_map = dict(self.gateway.policy.aliases)
@@ -1545,7 +1564,12 @@ class GatewayHandler(http.server.BaseHTTPRequestHandler):
             self.gateway.metrics.update(requests_failed=1)
             failure_metric_recorded = True
             if not headers_sent:
-                self._json(503, str(error), code="placement_unavailable")
+                try:
+                    self._json(503, str(error), code="placement_unavailable")
+                except (BrokenPipeError, ConnectionResetError):
+                    status = "cancelled"
+                    self.gateway.metrics.update(requests_cancelled=1)
+                    self.close_connection = True
             else:
                 self.close_connection = True
         finally:
