@@ -18,6 +18,156 @@ from tests.runtime_fixture import runtime_candidate
 
 
 class RuntimeCandidateCliTests(unittest.TestCase):
+    def test_tls_generation_supports_split_config_and_secret_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            certificate = root / "config" / "tls" / "server.crt"
+            private_key = root / "secrets" / "tls" / "server.key"
+
+            def generate(command: list[str], **_: object) -> mock.Mock:
+                pathlib.Path(command[command.index("-out") + 1]).write_text(
+                    "certificate", encoding="ascii"
+                )
+                pathlib.Path(command[command.index("-keyout") + 1]).write_text(
+                    "private-key", encoding="ascii"
+                )
+                return mock.Mock(returncode=0, stdout="", stderr="")
+
+            with (
+                mock.patch.object(cli, "run", side_effect=generate),
+                mock.patch.object(cli, "validate_tls_material"),
+                mock.patch.object(cli, "_certificate_names", return_value=["localhost"]),
+            ):
+                cli.ensure_tls_material(certificate, private_key)
+
+            self.assertEqual(certificate.read_text(encoding="ascii"), "certificate")
+            self.assertEqual(private_key.read_text(encoding="ascii"), "private-key")
+            self.assertEqual(private_key.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(certificate.stat().st_mode & 0o777, 0o644)
+
+    def test_watchdog_tls_generation_supports_split_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            config = root / "config" / "watchdog"
+            secrets = root / "secrets" / "watchdog"
+            paths = (
+                config / "server.crt",
+                secrets / "server.key",
+                config / "controller-ca.crt",
+                secrets / "controller-ca.key",
+                config / "local-controller.crt",
+                secrets / "local-controller.key",
+            )
+
+            def generate(command: list[str], **_: object) -> mock.Mock:
+                for option in ("-out", "-keyout"):
+                    if option in command:
+                        pathlib.Path(command[command.index(option) + 1]).write_text(
+                            option, encoding="ascii"
+                        )
+                return mock.Mock(returncode=0, stdout="", stderr="")
+
+            with (
+                mock.patch.object(cli, "run", side_effect=generate),
+                mock.patch.object(cli, "validate_watchdog_tls_material"),
+                mock.patch.object(cli, "_validate_watchdog_controller_material"),
+                mock.patch.object(cli, "_certificate_names", return_value=["localhost"]),
+            ):
+                cli.ensure_watchdog_tls_material(*paths)
+
+            for path in paths:
+                self.assertTrue(path.is_file())
+                self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+    def test_first_runtime_can_create_a_qualification_config(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            manifest_path = root / "runtime.json"
+            manifest_path.write_text("{}\n", encoding="ascii")
+            runtime = runtime_candidate()
+            manifest = cli.runtime_execution_manifest(runtime)
+            receipt = {
+                "candidate_id": runtime["id"],
+                "version": runtime["version"],
+                "digest": "5" * 64,
+                "policy": "local",
+            }
+            with (
+                mock.patch.object(
+                    cli, "default_service_config_path", return_value=root / "missing.json"
+                ),
+                mock.patch.object(
+                    cli,
+                    "_qualification_core_plane_config",
+                    return_value={"watchdog_data_root": str(root / "watchdog")},
+                ),
+                mock.patch.object(
+                    cli,
+                    "install_control_bundle",
+                    return_value=(root / "control", manifest_path),
+                ),
+                mock.patch.object(
+                    cli,
+                    "resolve_service_placement",
+                    return_value={
+                        "placement_id": "6" * 32,
+                        "placement_strategy": "single",
+                        "placement_members": ["7" * 32],
+                        "topology_sha256": "8" * 64,
+                    },
+                ),
+            ):
+                config = cli._qualification_config(
+                    manifest_path=manifest_path,
+                    manifest=manifest,
+                    release_root=root,
+                    manifest_sha256="9" * 64,
+                    name="letsinfer-example",
+                    port=18000,
+                    model_cache=root / "models",
+                    store_root=root / "store",
+                    runtime_cache_root=root / "cache",
+                    api_key_file=root / "engine.key",
+                    tls_cert_file=root / "server.crt",
+                    tls_key_file=root / "server.key",
+                    evidence_dir=root / "evidence",
+                    runtime_receipt=receipt,
+                )
+
+            self.assertTrue(config["qualification_mode"])
+            self.assertEqual(config["runtime_name"], runtime["id"])
+            self.assertEqual(
+                config["protection_root"],
+                str(
+                    (root / "watchdog").resolve()
+                    / cli.PROTECTION_ROOT_NAME
+                    / ("6" * 32)
+                ),
+            )
+
+    def test_qualification_core_plane_uses_the_managed_engine_key(self) -> None:
+        with (
+            mock.patch.object(
+                cli,
+                "verify_active_core_watchdog",
+                return_value=(pathlib.Path("/watchdog"), "1" * 64),
+            ),
+            mock.patch.object(cli, "core_watchdog_source_identity", return_value="2" * 64),
+            mock.patch.object(
+                cli,
+                "ensure_installation_identity",
+                return_value={"installation_id": "3" * 64},
+            ),
+            mock.patch.object(
+                cli,
+                "default_engine_api_key_path",
+                return_value=pathlib.Path("/secrets/engine/api-key"),
+            ),
+        ):
+            config = cli._qualification_core_plane_config()
+
+        self.assertEqual(config["engine_api_key_file"], "/secrets/engine/api-key")
+
     def test_legacy_commands_are_not_registered(self) -> None:
         parser = cli.parser()
         for command in ("derive", "engines", "releases"):
